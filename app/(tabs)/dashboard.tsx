@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { ScrollView, Text, StyleSheet, ActivityIndicator, Dimensions, View } from 'react-native';
+import { ScrollView, Text, StyleSheet, ActivityIndicator, View, Alert } from 'react-native';
 import axios from 'axios';
-import { BarChart, PieChart } from 'react-native-chart-kit';
 
 interface ResultadoPrefeito {
   candidatoPrefeito: string;
@@ -45,30 +44,20 @@ interface DashboardData {
   resultadosPorNivelEscolaridade: ResultadoEscolaridade[];
 }
 
-const screenWidth = Dimensions.get('window').width;
-
 const Dashboard = () => {
-  const [data, setData] = useState<DashboardData>({
-    resultadosPrefeitos: [],
-    resultadosVereadores: [],
-    votosIndecisos: 0,
-    percentualIndecisos: 0,
-    votosBrancosNulos: 0,
-    percentualBrancosNulos: 0,
-    resultadosPorRendaFamiliar: [],
-    resultadosPorGenero: [],
-    resultadosPorNivelEscolaridade: [],
-  });
+  const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
 
   const fetchData = async () => {
     try {
-      const prefData = await axios.get('http://ggustac-002-site1.htempurl.com/api/PesquisaEleitoral/resultados/prefeitos');
-      const verData = await axios.get('http://ggustac-002-site1.htempurl.com/api/PesquisaEleitoral/resultados/vereadores');
-      const indecisosData = await axios.get('http://ggustac-002-site1.htempurl.com/api/PesquisaEleitoral/resultados/indecisos-brancos-nulos');
-      const rendaData = await axios.get('http://ggustac-002-site1.htempurl.com/api/PesquisaEleitoral/resultados/renda-familiar');
-      const generoData = await axios.get('http://ggustac-002-site1.htempurl.com/api/PesquisaEleitoral/resultados/genero');
-      const escolaridadeData = await axios.get('http://ggustac-002-site1.htempurl.com/api/PesquisaEleitoral/resultados/nivel-escolaridade');
+      const [prefData, verData, indecisosData, rendaData, generoData, escolaridadeData] = await Promise.all([
+        axios.get('http://ggustac-002-site1.htempurl.com/api/PesquisaEleitoral/resultados/prefeitos'),
+        axios.get('http://ggustac-002-site1.htempurl.com/api/PesquisaEleitoral/resultados/vereadores'),
+        axios.get('http://ggustac-002-site1.htempurl.com/api/PesquisaEleitoral/resultados/indecisos-brancos-nulos'),
+        axios.get('http://ggustac-002-site1.htempurl.com/api/PesquisaEleitoral/resultados/renda-familiar'),
+        axios.get('http://ggustac-002-site1.htempurl.com/api/PesquisaEleitoral/resultados/genero'),
+        axios.get('http://ggustac-002-site1.htempurl.com/api/PesquisaEleitoral/resultados/nivel-escolaridade'),
+      ]);
 
       setData({
         resultadosPrefeitos: prefData.data.resultadosPrefeitos,
@@ -82,7 +71,9 @@ const Dashboard = () => {
         resultadosPorNivelEscolaridade: escolaridadeData.data.resultadosPorNivelEscolaridade,
       });
     } catch (error) {
-      console.error("Erro ao buscar dados: ", error);
+      const errorMessage = error instanceof Error ? error.message : "Erro desconhecido";
+      console.error("Erro ao buscar dados: ", errorMessage);
+      Alert.alert("Erro", "Não foi possível carregar os dados do dashboard.");
     } finally {
       setLoading(false);
     }
@@ -93,151 +84,101 @@ const Dashboard = () => {
   }, []);
 
   if (loading) {
-    return <ActivityIndicator style={styles.loading} size="large" />;
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#3498db" />
+      </View>
+    );
   }
 
-  // Preparando dados para gráficos
-  const prefeitoData = {
-    labels: data.resultadosPrefeitos.map((item) => item.candidatoPrefeito),
-    datasets: [
-      {
-        data: data.resultadosPrefeitos.map((item) => item.totalVotos),
-        color: (opacity = 1) => `rgba(46, 204, 113, ${opacity})`, // Verde
-      },
-    ],
-  };
-
-  const vereadorData = {
-    labels: data.resultadosVereadores.map((item) => item.candidatoVereador),
-    datasets: [
-      {
-        data: data.resultadosVereadores.map((item) => item.totalVotos),
-        color: (opacity = 1) => `rgba(52, 152, 219, ${opacity})`, // Azul
-      },
-    ],
-  };
-
-  const generoData = data.resultadosPorGenero.map((item, index) => ({
-    name: item.genero,
-    population: item.totalVotos,
-    color: index % 2 === 0 ? '#3498db' : '#95a5a6', // Azul e cinza claro
-    legendFontColor: '#34495e',
-    legendFontSize: 12,
-  }));
-
-  const rendaFamiliarData = data.resultadosPorRendaFamiliar.map((item, index) => ({
-    name: item.rendaFamiliar,
-    population: item.totalVotos,
-    color: index % 2 === 0 ? '#3498db' : '#95a5a6',
-    legendFontColor: '#34495e',
-    legendFontSize: 12,
-  }));
+  if (!data) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>Não há dados disponíveis para exibir.</Text>
+      </View>
+    );
+  }
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.card}>
-        <Text style={styles.title}>Resultados Prefeitos</Text>
-        <BarChart
-          data={prefeitoData}
-          width={screenWidth - 40}
-          height={220}
-          chartConfig={chartConfig}
-          style={styles.chart}
-          yAxisLabel=""
-          yAxisSuffix=""
-        />
-      </View>
+    <ScrollView contentContainerStyle={styles.container}>
+      <Text style={styles.sectionTitle}>Resultados Prefeitos</Text>
+      {data.resultadosPrefeitos.map((item, index) => (
+        <View key={index} style={styles.card}>
+          <Text style={styles.cardText}>Candidato: {item.candidatoPrefeito}</Text>
+          <Text style={styles.cardText}>Total de Votos: {item.totalVotos}</Text>
+          <Text style={styles.cardText}>Percentual: {item.percentualVotos}%</Text>
+        </View>
+      ))}
 
-      <View style={styles.card}>
-        <Text style={styles.title}>Resultados Vereadores</Text>
-        <BarChart
-          data={vereadorData}
-          width={screenWidth - 40}
-          height={220}
-          chartConfig={chartConfig}
-          style={styles.chart}
-          yAxisLabel=""
-          yAxisSuffix=""
-        />
-      </View>
+      <Text style={styles.sectionTitle}>Resultados Vereadores</Text>
+      {data.resultadosVereadores.map((item, index) => (
+        <View key={index} style={styles.card}>
+          <Text style={styles.cardText}>Candidato: {item.candidatoVereador}</Text>
+          <Text style={styles.cardText}>Total de Votos: {item.totalVotos}</Text>
+          <Text style={styles.cardText}>Percentual: {item.percentualVotos}%</Text>
+        </View>
+      ))}
 
-      <View style={styles.card}>
-        <Text style={styles.title}>Distribuição por Gênero</Text>
-        <PieChart
-          data={generoData}
-          width={screenWidth - 40}
-          height={220}
-          chartConfig={chartConfig}
-          accessor="population"
-          backgroundColor="transparent"
-          paddingLeft="15"
-          style={styles.chart}
-        />
-      </View>
+      <Text style={styles.sectionTitle}>Distribuição por Gênero</Text>
+      {data.resultadosPorGenero.map((item, index) => (
+        <View key={index} style={styles.card}>
+          <Text style={styles.cardText}>Gênero: {item.genero}</Text>
+          <Text style={styles.cardText}>Total de Votos: {item.totalVotos}</Text>
+          <Text style={styles.cardText}>Percentual: {item.percentualVotos}%</Text>
+        </View>
+      ))}
 
-      <View style={styles.card}>
-        <Text style={styles.title}>Distribuição por Renda Familiar</Text>
-        <PieChart
-          data={rendaFamiliarData}
-          width={screenWidth - 40}
-          height={220}
-          chartConfig={chartConfig}
-          accessor="population"
-          backgroundColor="transparent"
-          paddingLeft="15"
-          style={styles.chart}
-        />
-      </View>
+      <Text style={styles.sectionTitle}>Distribuição por Renda Familiar</Text>
+      {data.resultadosPorRendaFamiliar.map((item, index) => (
+        <View key={index} style={styles.card}>
+          <Text style={styles.cardText}>Renda: {item.rendaFamiliar}</Text>
+          <Text style={styles.cardText}>Total de Votos: {item.totalVotos}</Text>
+          <Text style={styles.cardText}>Percentual: {item.percentualVotos}%</Text>
+        </View>
+      ))}
     </ScrollView>
   );
-};
-
-const chartConfig = {
-  backgroundColor: '#f5f6fa',
-  backgroundGradientFrom: '#ffffff',
-  backgroundGradientTo: '#ffffff',
-  decimalPlaces: 0,
-  color: (opacity = 1) => `rgba(46, 204, 113, ${opacity})`, // Verde claro para outros gráficos
-  labelColor: (opacity = 1) => `rgba(52, 73, 94, ${opacity})`, // Cinza escuro
-  style: {
-    borderRadius: 8,
-  },
-  propsForDots: {
-    r: '5',
-    strokeWidth: '2',
-    stroke: '#27ae60',
-  },
 };
 
 const styles = StyleSheet.create({
   container: {
     padding: 16,
-    backgroundColor: '#ecf0f1', // Cinza claro
+    backgroundColor: '#ecf0f1',
+    flexGrow: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#ecf0f1',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#ecf0f1',
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#34495e',
+    marginVertical: 10,
   },
   card: {
     backgroundColor: '#ffffff',
     borderRadius: 8,
-    padding: 16,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    padding: 12,
+    marginBottom: 10,
+    elevation: 2,
   },
-  title: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#34495e', // Cinza escuro
-    marginBottom: 12,
+  cardText: {
+    fontSize: 16,
+    color: '#34495e',
   },
-  chart: {
-    borderRadius: 8,
-  },
-  loading: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+  errorText: {
+    fontSize: 16,
+    color: '#e74c3c',
+    textAlign: 'center',
   },
 });
 

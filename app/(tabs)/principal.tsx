@@ -29,7 +29,7 @@ export default function Principal() {
         <Text style={styles.buttonText}>Iniciar Pesquisa Eleitoral</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button} onPress={() => router.push('/')}>
+      <TouchableOpacity style={styles.button} onPress={() => router.push('/(tabs)/dashboard')}>
         <Text style={styles.buttonText}>Estatísticas</Text>
       </TouchableOpacity>
     </View>

@@ -42,10 +42,6 @@ export default function PesquisaEleitoralCadScreen() {
     else return formattedDate;
   };
 
-  const [fotoPrefeito, setFotoPrefeito] = useState<string | null>(null);
-const [fotoVereador, setFotoVereador] = useState<string | null>(null);
-
-
   useEffect(() => {
     fetchUfs();
     fetchStatusOptions();
@@ -187,16 +183,8 @@ const [fotoVereador, setFotoVereador] = useState<string | null>(null);
     }
   };
 
-  const handleDataEntrevistaChange = (text: string) => {
-    setDataEntrevista(formatDate(text));
-  };
-
-  const handleEntrevistadoDataNascimentoChange = (text: string) => {
-    setEntrevistadoDataNascimento(formatDate(text));
-  };
-
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
       <Text style={styles.title}>Cadastro de Pesquisa Eleitoral Municipal</Text>
       {loading ? (
         <ActivityIndicator size="large" color="#007bff" />
@@ -209,17 +197,16 @@ const [fotoVereador, setFotoVereador] = useState<string | null>(null);
             style={styles.input}
             placeholder="Data da Entrevista (dd/mm/aaaa)"
             value={dataEntrevista}
-            onChangeText={handleDataEntrevistaChange}
+            onChangeText={(text) => setDataEntrevista(formatDate(text))}
             maxLength={10}
             keyboardType="numeric"
           />
-
 
           <Text>Estado (UF):</Text>
           <Picker
             selectedValue={uf}
             style={styles.picker}
-            onValueChange={(itemValue: string) => setUf(itemValue)}
+            onValueChange={(itemValue) => setUf(itemValue)}
           >
             <Picker.Item label="Selecione o Estado" value="" />
             {ufs.map((estado) => (
@@ -231,7 +218,7 @@ const [fotoVereador, setFotoVereador] = useState<string | null>(null);
           <Picker
             selectedValue={municipio}
             style={styles.picker}
-            onValueChange={(itemValue: string) => setMunicipio(itemValue)}
+            onValueChange={(itemValue) => setMunicipio(itemValue)}
           >
             <Picker.Item label="Selecione o Município" value="" />
             {municipiosEntrevista.map((cidade) => (
@@ -243,7 +230,7 @@ const [fotoVereador, setFotoVereador] = useState<string | null>(null);
           <Picker
             selectedValue={idStatus}
             style={styles.picker}
-            onValueChange={(itemValue: number) => setIdStatus(itemValue)}
+            onValueChange={(itemValue) => setIdStatus(itemValue)}
           >
             <Picker.Item label="Selecione o Status" value={undefined} />
             {statusOptions.map((status: any) => (
@@ -255,7 +242,7 @@ const [fotoVereador, setFotoVereador] = useState<string | null>(null);
           <Picker
             selectedValue={idCandidatoPrefeito}
             style={styles.picker}
-            onValueChange={(itemValue: number) => setIdCandidatoPrefeito(itemValue)}
+            onValueChange={(itemValue) => setIdCandidatoPrefeito(itemValue)}
           >
             <Picker.Item label="Selecione o Prefeito" value={undefined} />
             {prefeitos.map((prefeito: any) => (
@@ -267,7 +254,7 @@ const [fotoVereador, setFotoVereador] = useState<string | null>(null);
           <Picker
             selectedValue={idCandidatoVereador}
             style={styles.picker}
-            onValueChange={(itemValue: number) => setIdCandidatoVereador(itemValue)}
+            onValueChange={(itemValue) => setIdCandidatoVereador(itemValue)}
           >
             <Picker.Item label="Selecione o Vereador" value={undefined} />
             {vereadores.map((vereador: any) => (
@@ -275,17 +262,20 @@ const [fotoVereador, setFotoVereador] = useState<string | null>(null);
             ))}
           </Picker>
 
+          <Text>Nome Completo do Entrevistado:</Text>
           <TextInput
             style={styles.input}
-            placeholder="Nome Completo do Entrevistado"
+            placeholder="Nome Completo"
             value={entrevistadoNomeCompleto}
             onChangeText={setEntrevistadoNomeCompleto}
           />
+
+          <Text>Data de Nascimento (dd/mm/aaaa):</Text>
           <TextInput
             style={styles.input}
-            placeholder="Data de Nascimento do Entrevistado (dd/mm/aaaa)"
+            placeholder="Data de Nascimento"
             value={entrevistadoDataNascimento}
-            onChangeText={handleEntrevistadoDataNascimentoChange}
+            onChangeText={(text) => setEntrevistadoDataNascimento(formatDate(text))}
             maxLength={10}
             keyboardType="numeric"
           />
@@ -294,18 +284,19 @@ const [fotoVereador, setFotoVereador] = useState<string | null>(null);
           <Picker
             selectedValue={entrevistadoUf}
             style={styles.picker}
-            onValueChange={(itemValue: string) => setEntrevistadoUf(itemValue)}
+            onValueChange={(itemValue) => setEntrevistadoUf(itemValue)}
           >
             <Picker.Item label="Selecione o Estado" value="" />
             {ufs.map((estado) => (
               <Picker.Item key={estado} label={estado} value={estado} />
             ))}
           </Picker>
+
           <Text>Município do Entrevistado:</Text>
           <Picker
             selectedValue={entrevistadoMunicipio}
             style={styles.picker}
-            onValueChange={(itemValue: string) => setEntrevistadoMunicipio(itemValue)}
+            onValueChange={(itemValue) => setEntrevistadoMunicipio(itemValue)}
           >
             <Picker.Item label="Selecione o Município" value="" />
             {municipiosEntrevistado.map((cidade) => (
@@ -313,38 +304,44 @@ const [fotoVereador, setFotoVereador] = useState<string | null>(null);
             ))}
           </Picker>
 
+          <Text>Celular do Entrevistado:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Celular"
+            value={entrevistadoCelular}
+            onChangeText={setEntrevistadoCelular}
+            keyboardType="phone-pad"
+          />
+
           <Text>Gênero do Entrevistado:</Text>
           <Picker
             selectedValue={entrevistadoIdGenero}
             style={styles.picker}
-            onValueChange={(itemValue: number) => setEntrevistadoIdGenero(itemValue)}
+            onValueChange={(itemValue) => setEntrevistadoIdGenero(itemValue)}
           >
             <Picker.Item label="Selecione o Gênero" value={undefined} />
-            {/* Exemplo de opções de gênero */}
             <Picker.Item label="Masculino" value={1} />
             <Picker.Item label="Feminino" value={2} />
           </Picker>
 
-          <Text>Nível de Escolaridade do Entrevistado:</Text>
+          <Text>Nível de Escolaridade:</Text>
           <Picker
             selectedValue={entrevistadoIdNivelEscolaridade}
             style={styles.picker}
-            onValueChange={(itemValue: number) => setEntrevistadoIdNivelEscolaridade(itemValue)}
+            onValueChange={(itemValue) => setEntrevistadoIdNivelEscolaridade(itemValue)}
           >
             <Picker.Item label="Selecione o Nível de Escolaridade" value={undefined} />
-            {/* Exemplo de opções de escolaridade */}
             <Picker.Item label="Fundamental" value={1} />
             <Picker.Item label="Médio" value={2} />
           </Picker>
 
-          <Text>Renda Familiar do Entrevistado:</Text>
+          <Text>Renda Familiar:</Text>
           <Picker
             selectedValue={entrevistadoIdRendaFamiliar}
             style={styles.picker}
-            onValueChange={(itemValue: number) => setEntrevistadoIdRendaFamiliar(itemValue)}
+            onValueChange={(itemValue) => setEntrevistadoIdRendaFamiliar(itemValue)}
           >
             <Picker.Item label="Selecione a Renda Familiar" value={undefined} />
-            {/* Exemplo de opções de renda */}
             <Picker.Item label="Até 1 salário mínimo" value={1} />
             <Picker.Item label="De 1 a 3 salários mínimos" value={2} />
           </Picker>
