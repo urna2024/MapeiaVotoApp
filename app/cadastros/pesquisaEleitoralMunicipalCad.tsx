@@ -46,7 +46,7 @@ export default function PesquisaEleitoralCadScreen() {
 
   const formatDateForApi = (date: string) => {
     const [day, month, year] = date.split('/');
-    return `${year}-${month}-${day}`; // Formato esperado pelo backend
+    return `${year}-${month}-${day}`; 
   };
 
   useEffect(() => {

@@ -75,7 +75,7 @@ export default function CandidatoCadScreen() {
           });
           const candidatoData = response.data;
 
-          // Converte a data para o formato DD/MM/YYYY
+          
           const [year, month, day] = candidatoData.dataNascimento.split('T')[0].split('-');
           const formattedDate = `${day}/${month}/${year}`;
 
@@ -117,11 +117,11 @@ export default function CandidatoCadScreen() {
     fetchMunicipios();
   }, [uf]);
 
-  // Função para adicionar barras automaticamente ao digitar a data de nascimento
+ 
   const handleDateChange = (text: string) => {
-    let formattedText = text.replace(/\D/g, ''); // Remove caracteres que não são números
+    let formattedText = text.replace(/\D/g, ''); 
 
-    // Adiciona a barra após o dia e o mês
+ 
     if (formattedText.length >= 3) {
       formattedText = formattedText.slice(0, 2) + '/' + formattedText.slice(2);
     }
@@ -138,7 +138,7 @@ export default function CandidatoCadScreen() {
       return;
     }
 
-    // Converte data de nascimento para o formato YYYY-MM-DD
+
     const [day, month, year] = dataNascimento.split('/');
     const formattedDataNascimento = `${year}-${month}-${day}`;
 
@@ -163,7 +163,7 @@ export default function CandidatoCadScreen() {
       const payload = {
         nomeCompleto,
         nomeUrna,
-        dataNascimento: formattedDataNascimento,  // agora no formato correto
+        dataNascimento: formattedDataNascimento,  
         uf,
         municipio,
         foto,
@@ -216,7 +216,7 @@ export default function CandidatoCadScreen() {
             placeholder="Data de Nascimento (DD/MM/YYYY)"
             value={dataNascimento}
             onChangeText={handleDateChange}
-            maxLength={10} // Limita o comprimento para DD/MM/YYYY
+            maxLength={10} 
           />
           <TextInput
             style={styles.input}

@@ -48,7 +48,7 @@ export default function LayoutTab() {
                 name="dashboard" 
                 options={{
                     title: "Estatisticas",
-                    tabBarIcon: ({ color }) => <Ionicons name="stats-chart" size={25} color={color} />, // Ícone representativo do dashboard
+                    tabBarIcon: ({ color }) => <Ionicons name="stats-chart" size={25} color={color} />,
                 }} 
             />
         </Tabs>

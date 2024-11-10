@@ -9,7 +9,7 @@ export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false); // Estado para alternar a visibilidade da senha
+  const [showPassword, setShowPassword] = useState(false); 
   const router = useRouter();
 
   const handleLogin = async () => {
@@ -63,9 +63,9 @@ export default function LoginScreen() {
       <Text style={styles.label}>Senha</Text>
       <View style={styles.passwordContainer}>
         <TextInput
-          style={styles.passwordInput} // Estilo específico para o campo de senha
+          style={styles.passwordInput} 
           placeholder="Digite a senha..."
-          secureTextEntry={!showPassword} // Alterna visibilidade da senha
+          secureTextEntry={!showPassword} 
           value={senha}
           onChangeText={setSenha}
           autoCapitalize="none"

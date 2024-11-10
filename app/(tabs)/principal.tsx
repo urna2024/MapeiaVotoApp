@@ -6,7 +6,6 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 export default function Principal() {
   const router = useRouter();
 
-  // Função para confirmar logout
   const handleLogout = () => {
     Alert.alert(
       'Confirmação de Logout',

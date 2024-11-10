@@ -132,14 +132,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   addButton: {
-    backgroundColor: '#1a2b52', // Cor do botão
+    backgroundColor: '#1a2b52', 
     padding: 15,
     borderRadius: 8,
     alignItems: 'center',
     marginBottom: 20,
   },
   addButtonText: {
-    color: '#fff', // Texto em branco
+    color: '#fff', 
     fontSize: 16,
     fontWeight: 'bold',
   },

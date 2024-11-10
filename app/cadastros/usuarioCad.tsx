@@ -28,7 +28,7 @@ export default function UsuarioCadScreen() {
   const [statusOptions, setStatusOptions] = useState<Status[]>([]);
   const [perfilOptions, setPerfilOptions] = useState<Perfil[]>([]);
   const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false); // Estado para alternar a visibilidade da senha
+  const [showPassword, setShowPassword] = useState(false); 
 
   useEffect(() => {
     const fetchStatusOptions = async () => {
@@ -158,7 +158,7 @@ export default function UsuarioCadScreen() {
 
           <View style={styles.passwordContainer}>
             <TextInput
-              style={styles.passwordInput} // Novo estilo apenas para o campo de senha
+              style={styles.passwordInput} 
               placeholder="Senha"
               value={senha}
               onChangeText={setSenha}
