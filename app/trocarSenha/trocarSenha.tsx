@@ -10,8 +10,8 @@ export default function TrocarSenhaScreen() {
   const [senha, setSenha] = useState('');
   const [novaSenha, setNovaSenha] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false); // Controle de visibilidade da senha atual
-  const [showNewPassword, setShowNewPassword] = useState(false); // Controle de visibilidade da nova senha
+  const [showPassword, setShowPassword] = useState(false); 
+  const [showNewPassword, setShowNewPassword] = useState(false); 
 
   const handleTrocarSenha = async () => {
     setLoading(true);
@@ -70,7 +70,7 @@ export default function TrocarSenhaScreen() {
           placeholder="Digite sua senha atual"
           value={senha}
           onChangeText={setSenha}
-          secureTextEntry={!showPassword} // Alterna visibilidade da senha atual
+          secureTextEntry={!showPassword} 
         />
         <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
           <Icon name={showPassword ? 'eye-slash' : 'eye'} size={20} color="#1a2b52" style={styles.eyeIcon} />
@@ -83,7 +83,7 @@ export default function TrocarSenhaScreen() {
           placeholder="Digite sua nova senha"
           value={novaSenha}
           onChangeText={setNovaSenha}
-          secureTextEntry={!showNewPassword} // Alterna visibilidade da nova senha
+          secureTextEntry={!showNewPassword} 
         />
         <TouchableOpacity onPress={() => setShowNewPassword(!showNewPassword)}>
           <Icon name={showNewPassword ? 'eye-slash' : 'eye'} size={20} color="#1a2b52" style={styles.eyeIcon} />
