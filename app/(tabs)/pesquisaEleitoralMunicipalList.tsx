@@ -49,7 +49,7 @@ export default function PesquisaEleitoralListScreen() {
         <Text>Status: {item.statusNome}</Text>
       </View>
 
-      <TouchableOpacity style={styles.iconContainer} onPress={() => router.push(`/pesquisaEleitoral/detalhes?id=${item.id}` as never)}>
+      <TouchableOpacity style={styles.iconContainer} onPress={() => router.push(`/cadastros/pesquisaEleitoralMunicipalCad?id=${item.id}` as never)}>
         <Icon name="eye" size={24} color="blue" />
       </TouchableOpacity>
     </View>

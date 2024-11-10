@@ -3,10 +3,12 @@ import { View, Text, TextInput, Button, StyleSheet, ActivityIndicator, Alert, Sc
 import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { router, useLocalSearchParams } from 'expo-router';
 
 export default function PesquisaEleitoralCadScreen() {
   const [dataEntrevista, setDataEntrevista] = useState('');
   const [uf, setUf] = useState('');
+  const { id } = useLocalSearchParams();
   const [municipio, setMunicipio] = useState('');
   const [votoIndeciso, setVotoIndeciso] = useState(false);
   const [votoBrancoNulo, setVotoBrancoNulo] = useState(false);
@@ -40,6 +42,11 @@ export default function PesquisaEleitoralCadScreen() {
     if (formattedDate.length >= 5) return `${formattedDate.slice(0, 2)}/${formattedDate.slice(2, 4)}/${formattedDate.slice(4)}`;
     else if (formattedDate.length >= 3) return `${formattedDate.slice(0, 2)}/${formattedDate.slice(2)}`;
     else return formattedDate;
+  };
+
+  const formatDateForApi = (date: string) => {
+    const [day, month, year] = date.split('/');
+    return `${year}-${month}-${day}`; // Formato esperado pelo backend
   };
 
   useEffect(() => {
@@ -143,7 +150,8 @@ export default function PesquisaEleitoralCadScreen() {
       }
 
       const payload = {
-        dataEntrevista,
+        request: {},
+        dataEntrevista: formatDateForApi(dataEntrevista),
         uf,
         municipio,
         votoIndeciso,
@@ -156,7 +164,7 @@ export default function PesquisaEleitoralCadScreen() {
         entrevistado: [
           {
             nomeCompleto: entrevistadoNomeCompleto,
-            dataNascimento: entrevistadoDataNascimento,
+            dataNascimento: formatDateForApi(entrevistadoDataNascimento),
             uf: entrevistadoUf,
             municipio: entrevistadoMunicipio,
             celular: entrevistadoCelular,
@@ -173,18 +181,27 @@ export default function PesquisaEleitoralCadScreen() {
           'Authorization': `Bearer ${token}`,
         },
       });
-
-      Alert.alert("Sucesso", "Pesquisa Eleitoral cadastrada com sucesso.");
-    } catch (error) {
-      console.error("Erro ao cadastrar pesquisa eleitoral:", error);
-      Alert.alert("Erro", "Não foi possível salvar os dados da pesquisa.");
+      Alert.alert("Sucesso", `Pesquisa Eleitoral ${id ? "atualizada" : "cadastrada"} com sucesso.`);
+      router.push('/(tabs)/pesquisaEleitoralMunicipalList' as never);
+    } catch (error: any) {
+      console.error("Erro ao cadastrar/atualizar candidato:", error);
+      Alert.alert("Erro", "Não foi possível salvar os dados do candidato.");
     } finally {
       setLoading(false);
     }
   };
 
+  const handleDataEntrevistaChange = (text: string) => {
+    setDataEntrevista(formatDate(text));
+  };
+
+  const handleEntrevistadoDataNascimentoChange = (text: string) => {
+    setEntrevistadoDataNascimento(formatDate(text));
+  };
+
   return (
-    <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+  
+    <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Cadastro de Pesquisa Eleitoral Municipal</Text>
       {loading ? (
         <ActivityIndicator size="large" color="#007bff" />
@@ -197,16 +214,16 @@ export default function PesquisaEleitoralCadScreen() {
             style={styles.input}
             placeholder="Data da Entrevista (dd/mm/aaaa)"
             value={dataEntrevista}
-            onChangeText={(text) => setDataEntrevista(formatDate(text))}
+            onChangeText={handleDataEntrevistaChange}
             maxLength={10}
             keyboardType="numeric"
           />
 
-          <Text>Estado (UF):</Text>
+<Text>Estado (UF):</Text>
           <Picker
             selectedValue={uf}
             style={styles.picker}
-            onValueChange={(itemValue) => setUf(itemValue)}
+            onValueChange={(itemValue: string) => setUf(itemValue)}
           >
             <Picker.Item label="Selecione o Estado" value="" />
             {ufs.map((estado) => (
@@ -218,7 +235,7 @@ export default function PesquisaEleitoralCadScreen() {
           <Picker
             selectedValue={municipio}
             style={styles.picker}
-            onValueChange={(itemValue) => setMunicipio(itemValue)}
+            onValueChange={(itemValue: string) => setMunicipio(itemValue)}
           >
             <Picker.Item label="Selecione o Município" value="" />
             {municipiosEntrevista.map((cidade) => (
@@ -230,7 +247,7 @@ export default function PesquisaEleitoralCadScreen() {
           <Picker
             selectedValue={idStatus}
             style={styles.picker}
-            onValueChange={(itemValue) => setIdStatus(itemValue)}
+            onValueChange={(itemValue: number) => setIdStatus(itemValue)}
           >
             <Picker.Item label="Selecione o Status" value={undefined} />
             {statusOptions.map((status: any) => (
@@ -242,7 +259,7 @@ export default function PesquisaEleitoralCadScreen() {
           <Picker
             selectedValue={idCandidatoPrefeito}
             style={styles.picker}
-            onValueChange={(itemValue) => setIdCandidatoPrefeito(itemValue)}
+            onValueChange={(itemValue: number) => setIdCandidatoPrefeito(itemValue)}
           >
             <Picker.Item label="Selecione o Prefeito" value={undefined} />
             {prefeitos.map((prefeito: any) => (
@@ -254,7 +271,7 @@ export default function PesquisaEleitoralCadScreen() {
           <Picker
             selectedValue={idCandidatoVereador}
             style={styles.picker}
-            onValueChange={(itemValue) => setIdCandidatoVereador(itemValue)}
+            onValueChange={(itemValue: number) => setIdCandidatoVereador(itemValue)}
           >
             <Picker.Item label="Selecione o Vereador" value={undefined} />
             {vereadores.map((vereador: any) => (
@@ -262,41 +279,42 @@ export default function PesquisaEleitoralCadScreen() {
             ))}
           </Picker>
 
-          <Text>Nome Completo do Entrevistado:</Text>
           <TextInput
             style={styles.input}
-            placeholder="Nome Completo"
+            placeholder="Nome Completo do Entrevistado"
             value={entrevistadoNomeCompleto}
             onChangeText={setEntrevistadoNomeCompleto}
           />
-
-          <Text>Data de Nascimento (dd/mm/aaaa):</Text>
           <TextInput
             style={styles.input}
-            placeholder="Data de Nascimento"
+            placeholder="Data de Nascimento do Entrevistado (dd/mm/aaaa)"
             value={entrevistadoDataNascimento}
-            onChangeText={(text) => setEntrevistadoDataNascimento(formatDate(text))}
+            onChangeText={handleEntrevistadoDataNascimentoChange}
             maxLength={10}
             keyboardType="numeric"
           />
-
+          <TextInput
+            style={styles.input}
+            placeholder="Celular do Entrevistado"
+            value={entrevistadoCelular}
+            onChangeText={setEntrevistadoCelular}
+          />
           <Text>UF do Entrevistado:</Text>
           <Picker
             selectedValue={entrevistadoUf}
             style={styles.picker}
-            onValueChange={(itemValue) => setEntrevistadoUf(itemValue)}
+            onValueChange={(itemValue: string) => setEntrevistadoUf(itemValue)}
           >
             <Picker.Item label="Selecione o Estado" value="" />
             {ufs.map((estado) => (
               <Picker.Item key={estado} label={estado} value={estado} />
             ))}
           </Picker>
-
           <Text>Município do Entrevistado:</Text>
           <Picker
             selectedValue={entrevistadoMunicipio}
             style={styles.picker}
-            onValueChange={(itemValue) => setEntrevistadoMunicipio(itemValue)}
+            onValueChange={(itemValue: string) => setEntrevistadoMunicipio(itemValue)}
           >
             <Picker.Item label="Selecione o Município" value="" />
             {municipiosEntrevistado.map((cidade) => (
@@ -304,49 +322,78 @@ export default function PesquisaEleitoralCadScreen() {
             ))}
           </Picker>
 
-          <Text>Celular do Entrevistado:</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Celular"
-            value={entrevistadoCelular}
-            onChangeText={setEntrevistadoCelular}
-            keyboardType="phone-pad"
-          />
-
           <Text>Gênero do Entrevistado:</Text>
           <Picker
             selectedValue={entrevistadoIdGenero}
             style={styles.picker}
-            onValueChange={(itemValue) => setEntrevistadoIdGenero(itemValue)}
+            onValueChange={(itemValue: number) => setEntrevistadoIdGenero(itemValue)}
           >
             <Picker.Item label="Selecione o Gênero" value={undefined} />
+            
             <Picker.Item label="Masculino" value={1} />
             <Picker.Item label="Feminino" value={2} />
           </Picker>
 
-          <Text>Nível de Escolaridade:</Text>
+          <Text>Nível de Escolaridade do Entrevistado:</Text>
           <Picker
             selectedValue={entrevistadoIdNivelEscolaridade}
             style={styles.picker}
-            onValueChange={(itemValue) => setEntrevistadoIdNivelEscolaridade(itemValue)}
+            onValueChange={(itemValue: number) => setEntrevistadoIdNivelEscolaridade(itemValue)}
           >
             <Picker.Item label="Selecione o Nível de Escolaridade" value={undefined} />
-            <Picker.Item label="Fundamental" value={1} />
-            <Picker.Item label="Médio" value={2} />
+            
+            <Picker.Item label="Prefiro não informar" value={1} />
+            <Picker.Item label="Ensino Fundamental Incompleto" value={2} />
+            <Picker.Item label="Ensino Fundamental Completo" value={3} />
+            <Picker.Item label="Ensino Médio Incompleto" value={4} />
+            <Picker.Item label="Ensino Médio Completo" value={5} />
+            <Picker.Item label="Ensino Superior Incompleto" value={6} />
+            <Picker.Item label="Ensino Superior Completo" value={7} />
+            <Picker.Item label="Pós-graduação" value={8} />
+            <Picker.Item label="Mestrado" value={9} />
+            <Picker.Item label="Doutorado" value={10} />
           </Picker>
 
-          <Text>Renda Familiar:</Text>
+          <Text>Renda Familiar do Entrevistado:</Text>
           <Picker
             selectedValue={entrevistadoIdRendaFamiliar}
             style={styles.picker}
-            onValueChange={(itemValue) => setEntrevistadoIdRendaFamiliar(itemValue)}
+            onValueChange={(itemValue: number) => setEntrevistadoIdRendaFamiliar(itemValue)}
           >
             <Picker.Item label="Selecione a Renda Familiar" value={undefined} />
-            <Picker.Item label="Até 1 salário mínimo" value={1} />
-            <Picker.Item label="De 1 a 3 salários mínimos" value={2} />
+            <Picker.Item label="Prefiro não informar" value={2} />
+            <Picker.Item label="Até 1 salário mínimo" value={2} />
+            <Picker.Item label="De 1 a 2 salários mínimos" value={3} />
+            <Picker.Item label="De 2 a 3 salários mínimos" value={4} />
+            <Picker.Item label="De 3 a 4 salários mínimos" value={5} />
+            <Picker.Item label="De 4 a 5 salários mínimos" value={6} />
+            <Picker.Item label="Mais de 5 salários mínimos" value={7} />
           </Picker>
+          <View style={styles.switchContainer}>
+            <Text>Voto Indeciso</Text>
+            <Switch
+              value={votoIndeciso}
+              onValueChange={(value) => setVotoIndeciso(value)}
+            />
+          </View>
+
+          <View style={styles.switchContainer}>
+            <Text>Voto em Branco ou Nulo</Text>
+            <Switch
+              value={votoBrancoNulo}
+              onValueChange={(value) => setVotoBrancoNulo(value)}
+            />
+          </View>
+
+          <TextInput
+            style={styles.input}
+            placeholder="Sugestão de Melhoria"
+            value={sugestaoMelhoria}
+            onChangeText={setSugestaoMelhoria}
+          />
 
           <Button title="Cadastrar Pesquisa" onPress={handleCadastro} />
+          <View style={{ paddingBottom: 120 }} />
         </>
       )}
     </ScrollView>
@@ -362,7 +409,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 15,
+    marginBottom: 10,
   },
   input: {
     borderColor: '#CCC',
@@ -375,5 +422,11 @@ const styles = StyleSheet.create({
     height: 50,
     width: '100%',
     marginBottom: 15,
+  },
+  switchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 10,
   },
 });

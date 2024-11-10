@@ -45,16 +45,9 @@ export default function LayoutTab() {
                 }}
             />
             <Tabs.Screen 
-                name="perfil" 
-                options={{
-                    title: "Perfil",
-                    tabBarIcon: ({ color }) => <Ionicons name="person" size={25} color={color} />,
-                }} 
-            />
-            <Tabs.Screen 
                 name="dashboard" 
                 options={{
-                    title: "Dashboard",
+                    title: "Estatisticas",
                     tabBarIcon: ({ color }) => <Ionicons name="stats-chart" size={25} color={color} />, // Ícone representativo do dashboard
                 }} 
             />

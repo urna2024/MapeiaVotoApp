@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
-import { Text, View, TextInput, Button, StyleSheet, ActivityIndicator, Image, TouchableOpacity } from 'react-native';
+import { Text, View, TextInput, StyleSheet, ActivityIndicator, Image, TouchableOpacity, Alert } from 'react-native';
 import axios from 'axios';
 import { useRouter } from "expo-router";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false); // Estado para alternar a visibilidade da senha
   const router = useRouter();
 
   const handleLogin = async () => {
@@ -23,22 +25,25 @@ export default function LoginScreen() {
 
       if (precisaTrocarSenha) {
         await AsyncStorage.setItem('userId', String(userId));
+        Alert.alert('Login bem-sucedido', 'Você será redirecionado para trocar a senha.');
         router.replace('/trocarSenha/trocarSenha' as never);
       } else if (response.data.token) {
         const { token } = response.data;
         await AsyncStorage.setItem('token', token);
         await AsyncStorage.setItem('userId', String(userId));
+        Alert.alert('Login bem-sucedido', 'Bem-vindo ao sistema!');
         router.replace('/(tabs)/principal' as never);
       } else {
-        console.log('Token não recebido, credenciais inválidas');
+        Alert.alert('Erro de login', 'Credenciais inválidas. Por favor, verifique e tente novamente.');
       }
     } catch (error) {
+      Alert.alert('Erro de login', 'Não foi possível realizar o login. Verifique as credenciais e tente novamente.');
       console.error('Erro ao fazer login:', error);
     } finally {
       setLoading(false);
     }
   };
-  
+
   return (
     <View style={styles.container}>
       <Image source={require('../assets/images/urna.png')} style={styles.image} />
@@ -56,14 +61,19 @@ export default function LoginScreen() {
       />
 
       <Text style={styles.label}>Senha</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Digite a senha..."
-        secureTextEntry
-        value={senha}
-        onChangeText={setSenha}
-        autoCapitalize="none"
-      />
+      <View style={styles.passwordContainer}>
+        <TextInput
+          style={styles.passwordInput} // Estilo específico para o campo de senha
+          placeholder="Digite a senha..."
+          secureTextEntry={!showPassword} // Alterna visibilidade da senha
+          value={senha}
+          onChangeText={setSenha}
+          autoCapitalize="none"
+        />
+        <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+          <Icon name={showPassword ? 'eye-slash' : 'eye'} size={20} color="#1a2b52" style={styles.eyeIcon} />
+        </TouchableOpacity>
+      </View>
 
       {loading ? (
         <ActivityIndicator size="large" color="#ffffff" />
@@ -82,7 +92,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: '#1E2A78', 
+    backgroundColor: '#1E2A78',
   },
   image: {
     width: 150,
@@ -118,6 +128,25 @@ const styles = StyleSheet.create({
     fontSize: 16,
     backgroundColor: '#FFF',
     color: '#000',
+  },
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderColor: '#FFF',
+    borderWidth: 1,
+    borderRadius: 6,
+    marginBottom: 15,
+    backgroundColor: '#FFF',
+    paddingHorizontal: 10,
+  },
+  passwordInput: {
+    flex: 1,
+    fontSize: 16,
+    padding: 10,
+    color: '#000',
+  },
+  eyeIcon: {
+    marginLeft: 10,
   },
   button: {
     width: '100%',

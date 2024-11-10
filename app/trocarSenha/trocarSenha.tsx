@@ -3,12 +3,15 @@ import { View, Text, TextInput, Alert, StyleSheet, ActivityIndicator, TouchableO
 import axios from 'axios';
 import { useRouter } from "expo-router";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 export default function TrocarSenhaScreen() {
   const router = useRouter();
   const [senha, setSenha] = useState('');
   const [novaSenha, setNovaSenha] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false); // Controle de visibilidade da senha atual
+  const [showNewPassword, setShowNewPassword] = useState(false); // Controle de visibilidade da nova senha
 
   const handleTrocarSenha = async () => {
     setLoading(true);
@@ -61,20 +64,31 @@ export default function TrocarSenhaScreen() {
       />
       <Text style={styles.title}>Trocar Senha</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Digite sua senha atual"
-        value={senha}
-        onChangeText={setSenha}
-        secureTextEntry
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Digite sua nova senha"
-        value={novaSenha}
-        onChangeText={setNovaSenha}
-        secureTextEntry
-      />
+      <View style={styles.passwordContainer}>
+        <TextInput
+          style={styles.passwordInput}
+          placeholder="Digite sua senha atual"
+          value={senha}
+          onChangeText={setSenha}
+          secureTextEntry={!showPassword} // Alterna visibilidade da senha atual
+        />
+        <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+          <Icon name={showPassword ? 'eye-slash' : 'eye'} size={20} color="#1a2b52" style={styles.eyeIcon} />
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.passwordContainer}>
+        <TextInput
+          style={styles.passwordInput}
+          placeholder="Digite sua nova senha"
+          value={novaSenha}
+          onChangeText={setNovaSenha}
+          secureTextEntry={!showNewPassword} // Alterna visibilidade da nova senha
+        />
+        <TouchableOpacity onPress={() => setShowNewPassword(!showNewPassword)}>
+          <Icon name={showNewPassword ? 'eye-slash' : 'eye'} size={20} color="#1a2b52" style={styles.eyeIcon} />
+        </TouchableOpacity>
+      </View>
 
       {loading ? (
         <ActivityIndicator size="large" color="#1a2b52" />
@@ -103,21 +117,30 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#1a2b52', // Cor padrão do sistema
+    color: '#1a2b52',
     marginBottom: 20,
   },
-  input: {
-    width: '100%',
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     borderColor: '#CCC',
     borderWidth: 1,
     borderRadius: 6,
-    padding: 10,
     marginBottom: 15,
-    fontSize: 16,
     backgroundColor: '#f5f5f5',
+    paddingHorizontal: 10,
+  },
+  passwordInput: {
+    flex: 1,
+    fontSize: 16,
+    padding: 10,
+    color: '#000',
+  },
+  eyeIcon: {
+    marginLeft: 10,
   },
   button: {
-    backgroundColor: '#1a2b52', // Cor do botão
+    backgroundColor: '#1a2b52',
     padding: 15,
     borderRadius: 8,
     alignItems: 'center',
@@ -125,7 +148,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   buttonText: {
-    color: '#fff', // Texto em branco
+    color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
   },

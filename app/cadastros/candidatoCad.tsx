@@ -166,7 +166,7 @@ export default function CandidatoCadScreen() {
         dataNascimento: formattedDataNascimento,  // agora no formato correto
         uf,
         municipio,
-        foto,  
+        foto,
         idStatus,
         idPartidoPolitico: idPartido,
         idCargoDisputado: idCargo,
@@ -284,9 +284,12 @@ export default function CandidatoCadScreen() {
               <Picker.Item key={cargo.id} label={cargo.nome} value={cargo.id} />
             ))}
           </Picker>
-
+          
           <TouchableOpacity style={styles.registerButton} onPress={handleCadastro}>
             <Text style={styles.registerButtonText}>{id ? "Salvar Alterações" : "Cadastrar Candidato"}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.backButton} onPress={() => router.push('/(tabs)/candidatoList' as never)}>
+            <Text style={styles.backButtonText}>Voltar</Text>
           </TouchableOpacity>
         </ScrollView>
       )}
@@ -330,15 +333,26 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   registerButton: {
-    backgroundColor: '#1a2b52', // Cor do botão padrão
+    backgroundColor: '#1a2b52', 
     padding: 15,
     borderRadius: 8,
     alignItems: 'center',
     marginBottom: 20,
   },
   registerButtonText: {
-    color: '#fff', // Texto em branco
+    color: '#fff', 
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  backButton: {
+    padding: 10,
+    backgroundColor: '#1a2b52',
+    borderRadius: 5,
+    margin: 20,
+  },
+  backButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    textAlign: 'center',
   },
 });

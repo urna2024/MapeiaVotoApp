@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, ActivityIndicator, Alert, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, ActivityIndicator, Alert, TouchableOpacity, StyleSheet } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import axios from 'axios';
 import { useRouter, useLocalSearchParams } from "expo-router";
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -27,6 +28,7 @@ export default function UsuarioCadScreen() {
   const [statusOptions, setStatusOptions] = useState<Status[]>([]);
   const [perfilOptions, setPerfilOptions] = useState<Perfil[]>([]);
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false); // Estado para alternar a visibilidade da senha
 
   useEffect(() => {
     const fetchStatusOptions = async () => {
@@ -82,11 +84,8 @@ export default function UsuarioCadScreen() {
   }, [id]);
 
   const handleCadastro = async () => {
-    console.log("Iniciando processo de cadastro");
-
     if (!nomeUsuario || !email || !senha || idStatus === undefined || idPerfilUsuario === undefined) {
       Alert.alert("Erro", "Todos os campos são obrigatórios.");
-      console.log("Campos obrigatórios ausentes", { nomeUsuario, email, senha, idStatus, idPerfilUsuario });
       return;
     }
 
@@ -118,8 +117,6 @@ export default function UsuarioCadScreen() {
         idUsuarioOperacao: Number(userId)
       };
 
-      console.log("Enviando dados para a API:", payload);
-
       const response = await axios[method](endpoint, payload, {
         headers: {
           'Content-Type': 'application/json',
@@ -127,24 +124,10 @@ export default function UsuarioCadScreen() {
         },
       });
 
-      console.log("Resposta da API:", response.data);
-
-      if (!id && response.data && response.data.id) {
-        Alert.alert("Sucesso", "Usuário cadastrado com sucesso.");
-        console.log("Novo usuário criado com ID:", response.data.id);
-      } else {
-        Alert.alert("Sucesso", "Usuário atualizado com sucesso.");
-      }
-      
+      Alert.alert("Sucesso", id ? "Usuário atualizado com sucesso." : "Usuário cadastrado com sucesso.");
       router.push('/(tabs)/usuarioList' as never);
     } catch (error: any) {
-      console.error("Erro ao cadastrar/atualizar usuário:", error);
-
-      if (error.response) {
-        console.log("Erro resposta:", error.response.data);
-      } else {
-        console.log("Erro desconhecido:", error.message);
-      }
+      Alert.alert("Erro", "Erro ao cadastrar/atualizar usuário. Por favor, tente novamente.");
     } finally {
       setLoading(false);
     }
@@ -172,13 +155,19 @@ export default function UsuarioCadScreen() {
             keyboardType="email-address"
             autoCapitalize="none"
           />
-          <TextInput
-            style={styles.input}
-            placeholder="Senha"
-            value={senha}
-            onChangeText={setSenha}
-            secureTextEntry
-          />
+
+          <View style={styles.passwordContainer}>
+            <TextInput
+              style={styles.passwordInput} // Novo estilo apenas para o campo de senha
+              placeholder="Senha"
+              value={senha}
+              onChangeText={setSenha}
+              secureTextEntry={!showPassword}
+            />
+            <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+              <Icon name={showPassword ? 'eye-slash' : 'eye'} size={20} color="#1a2b52" style={styles.eyeIcon} />
+            </TouchableOpacity>
+          </View>
 
           <Text>Status:</Text>
           <Picker
@@ -233,6 +222,25 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     fontSize: 16,
     backgroundColor: '#f5f5f5',
+  },
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderColor: '#CCC',
+    borderWidth: 1,
+    borderRadius: 6,
+    marginBottom: 15,
+    backgroundColor: '#f5f5f5',
+    paddingHorizontal: 10,
+  },
+  passwordInput: {
+    flex: 1,
+    fontSize: 16,
+    padding: 10,
+    color: '#000',
+  },
+  eyeIcon: {
+    marginLeft: 10,
   },
   picker: {
     height: 50,
