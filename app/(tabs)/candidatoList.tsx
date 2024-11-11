@@ -130,6 +130,7 @@ export default function CandidatoListScreen() {
     );
   }
 
+  //teste de build
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Lista de Candidatos</Text>
