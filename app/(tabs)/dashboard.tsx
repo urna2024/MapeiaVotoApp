@@ -51,12 +51,12 @@ const Dashboard = () => {
   const fetchData = async () => {
     try {
       const [prefData, verData, indecisosData, rendaData, generoData, escolaridadeData] = await Promise.all([
-        axios.get('http://ggustac-002-site1.htempurl.com/api/PesquisaEleitoral/resultados/prefeitos'),
-        axios.get('http://ggustac-002-site1.htempurl.com/api/PesquisaEleitoral/resultados/vereadores'),
-        axios.get('http://ggustac-002-site1.htempurl.com/api/PesquisaEleitoral/resultados/indecisos-brancos-nulos'),
-        axios.get('http://ggustac-002-site1.htempurl.com/api/PesquisaEleitoral/resultados/renda-familiar'),
-        axios.get('http://ggustac-002-site1.htempurl.com/api/PesquisaEleitoral/resultados/genero'),
-        axios.get('http://ggustac-002-site1.htempurl.com/api/PesquisaEleitoral/resultados/nivel-escolaridade'),
+        axios.get('https://ggustac-002-site1.htempurl.com/api/PesquisaEleitoral/resultados/prefeitos'),
+        axios.get('https://ggustac-002-site1.htempurl.com/api/PesquisaEleitoral/resultados/vereadores'),
+        axios.get('https://ggustac-002-site1.htempurl.com/api/PesquisaEleitoral/resultados/indecisos-brancos-nulos'),
+        axios.get('https://ggustac-002-site1.htempurl.com/api/PesquisaEleitoral/resultados/renda-familiar'),
+        axios.get('https://ggustac-002-site1.htempurl.com/api/PesquisaEleitoral/resultados/genero'),
+        axios.get('https://ggustac-002-site1.htempurl.com/api/PesquisaEleitoral/resultados/nivel-escolaridade'),
       ]);
 
       setData({

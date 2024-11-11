@@ -111,7 +111,7 @@ export default function PesquisaEleitoralCadScreen() {
   const fetchPesquisaData = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`http://ggustac-002-site1.htempurl.com/api/PesquisaEleitoral/${id}`);
+      const response = await axios.get(`https://ggustac-002-site1.htempurl.com/api/PesquisaEleitoral/${id}`);
       const pesquisa = response.data;
 
       console.log("Dados da pesquisa:", pesquisa);
@@ -167,7 +167,7 @@ export default function PesquisaEleitoralCadScreen() {
 
   const fetchStatusOptions = async () => {
     try {
-      const response = await axios.get('http://ggustac-002-site1.htempurl.com/api/Candidato/tipoStatus');
+      const response = await axios.get('https://ggustac-002-site1.htempurl.com/api/Candidato/tipoStatus');
       setStatusOptions(response.data);
     } catch (error) {
       console.error("Erro ao buscar status:", error);
@@ -176,7 +176,7 @@ export default function PesquisaEleitoralCadScreen() {
 
   const fetchGeneros = async () => {
     try {
-      const response = await axios.get('http://ggustac-002-site1.htempurl.com/api/PesquisaEleitoral/generos');
+      const response = await axios.get('https://ggustac-002-site1.htempurl.com/api/PesquisaEleitoral/generos');
       setGeneros(response.data);
     } catch (error) {
       console.error("Erro ao buscar gêneros:", error);
@@ -185,7 +185,7 @@ export default function PesquisaEleitoralCadScreen() {
 
   const fetchNiveisEscolaridade = async () => {
     try {
-      const response = await axios.get('http://ggustac-002-site1.htempurl.com/api/PesquisaEleitoral/nivelEscolaridade');
+      const response = await axios.get('https://ggustac-002-site1.htempurl.com/api/PesquisaEleitoral/nivelEscolaridade');
       setNivelEscolaridadeOptions(response.data);
     } catch (error) {
       console.error("Erro ao buscar níveis de escolaridade:", error);
@@ -194,7 +194,7 @@ export default function PesquisaEleitoralCadScreen() {
 
   const fetchRendaFamiliar = async () => {
     try {
-      const response = await axios.get('http://ggustac-002-site1.htempurl.com/api/PesquisaEleitoral/rendaFamiliar');
+      const response = await axios.get('https://ggustac-002-site1.htempurl.com/api/PesquisaEleitoral/rendaFamiliar');
       setRendaFamiliarOptions(response.data);
     } catch (error) {
       console.error("Erro ao buscar renda familiar:", error);
@@ -203,7 +203,7 @@ export default function PesquisaEleitoralCadScreen() {
 
   const fetchPrefeitos = async () => {
     try {
-      const response = await axios.get(`http://ggustac-002-site1.htempurl.com/api/PesquisaEleitoral/prefeitos?uf=${uf}&municipio=${municipio}`);
+      const response = await axios.get(`https://ggustac-002-site1.htempurl.com/api/PesquisaEleitoral/prefeitos?uf=${uf}&municipio=${municipio}`);
       setPrefeitos(response.data);
     } catch (error) {
       console.error("Erro ao buscar prefeitos:", error);
@@ -212,7 +212,7 @@ export default function PesquisaEleitoralCadScreen() {
 
   const fetchVereadores = async () => {
     try {
-      const response = await axios.get(`http://ggustac-002-site1.htempurl.com/api/PesquisaEleitoral/vereadores?uf=${uf}&municipio=${municipio}`);
+      const response = await axios.get(`https://ggustac-002-site1.htempurl.com/api/PesquisaEleitoral/vereadores?uf=${uf}&municipio=${municipio}`);
       setVereadores(response.data);
     } catch (error) {
       console.error("Erro ao buscar vereadores:", error);
@@ -290,7 +290,7 @@ export default function PesquisaEleitoralCadScreen() {
         ],
       };
 
-      await axios.post('http://ggustac-002-site1.htempurl.com/api/PesquisaEleitoral', payload, {
+      await axios.post('https://ggustac-002-site1.htempurl.com/api/PesquisaEleitoral', payload, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,

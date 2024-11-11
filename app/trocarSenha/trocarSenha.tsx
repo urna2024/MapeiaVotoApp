@@ -26,7 +26,7 @@ export default function TrocarSenhaScreen() {
       }
 
       const response = await axios.post(
-        'http://ggustac-002-site1.htempurl.com/api/Seguranca/TrocarSenha',
+        'https://ggustac-002-site1.htempurl.com/api/Seguranca/TrocarSenha',
         {
           id: Number(userId),
           senha,

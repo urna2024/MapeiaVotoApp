@@ -44,9 +44,9 @@ export default function CandidatoCadScreen() {
     const fetchOptions = async () => {
       try {
         const [statusRes, partidoRes, cargoRes] = await Promise.all([
-          axios.get('http://ggustac-002-site1.htempurl.com/api/Candidato/tipoStatus', { headers: { 'Accept': '*/*' } }),
-          axios.get('http://ggustac-002-site1.htempurl.com/api/Candidato/tipoPartidoPolitico', { headers: { 'Accept': '*/*' } }),
-          axios.get('http://ggustac-002-site1.htempurl.com/api/Candidato/tipoCargoDisputado', { headers: { 'Accept': '*/*' } })
+          axios.get('https://ggustac-002-site1.htempurl.com/api/Candidato/tipoStatus', { headers: { 'Accept': '*/*' } }),
+          axios.get('https://ggustac-002-site1.htempurl.com/api/Candidato/tipoPartidoPolitico', { headers: { 'Accept': '*/*' } }),
+          axios.get('https://ggustac-002-site1.htempurl.com/api/Candidato/tipoCargoDisputado', { headers: { 'Accept': '*/*' } })
         ]);
         setStatusOptions(statusRes.data);
         setPartidoOptions(partidoRes.data);
@@ -70,7 +70,7 @@ export default function CandidatoCadScreen() {
       if (id) {
         setLoading(true);
         try {
-          const response = await axios.get(`http://ggustac-002-site1.htempurl.com/api/Candidato/${id}/dadosCompletos`, {
+          const response = await axios.get(`https://ggustac-002-site1.htempurl.com/api/Candidato/${id}/dadosCompletos`, {
             headers: { 'Accept': 'application/json' },
           });
           const candidatoData = response.data;
@@ -155,8 +155,8 @@ export default function CandidatoCadScreen() {
       }
 
       const endpoint = id
-        ? `http://ggustac-002-site1.htempurl.com/api/Candidato/${id}`
-        : 'http://ggustac-002-site1.htempurl.com/api/Candidato';
+        ? `https://ggustac-002-site1.htempurl.com/api/Candidato/${id}`
+        : 'https://ggustac-002-site1.htempurl.com/api/Candidato';
 
       const method = id ? 'put' : 'post';
 

@@ -33,7 +33,7 @@ export default function UsuarioCadScreen() {
   useEffect(() => {
     const fetchStatusOptions = async () => {
       try {
-        const response = await axios.get('http://ggustac-002-site1.htempurl.com/api/Usuario/tipoStatus', {
+        const response = await axios.get('https://ggustac-002-site1.htempurl.com/api/Usuario/tipoStatus', {
           headers: { 'Accept': '*/*' },
         });
         setStatusOptions(response.data);
@@ -44,7 +44,7 @@ export default function UsuarioCadScreen() {
 
     const fetchPerfilOptions = async () => {
       try {
-        const response = await axios.get('http://ggustac-002-site1.htempurl.com/api/Usuario/tipoPerfilUsuario', {
+        const response = await axios.get('https://ggustac-002-site1.htempurl.com/api/Usuario/tipoPerfilUsuario', {
           headers: { 'Accept': '*/*' },
         });
         setPerfilOptions(response.data);
@@ -62,7 +62,7 @@ export default function UsuarioCadScreen() {
       if (id) {
         setLoading(true);
         try {
-          const response = await axios.get(`http://ggustac-002-site1.htempurl.com/api/Usuario/${id}/dadosCompletos`, {
+          const response = await axios.get(`https://ggustac-002-site1.htempurl.com/api/Usuario/${id}/dadosCompletos`, {
             headers: { 'Accept': 'application/json' },
           });
           const userData = response.data;
@@ -102,8 +102,8 @@ export default function UsuarioCadScreen() {
       }
 
       const endpoint = id
-        ? `http://ggustac-002-site1.htempurl.com/api/Usuario/${id}`
-        : 'http://ggustac-002-site1.htempurl.com/api/Usuario';
+        ? `https://ggustac-002-site1.htempurl.com/api/Usuario/${id}`
+        : 'https://ggustac-002-site1.htempurl.com/api/Usuario';
 
       const method = id ? 'put' : 'post';
 

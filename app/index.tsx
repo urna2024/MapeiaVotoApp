@@ -16,7 +16,7 @@ export default function LoginScreen() {
     setLoading(true);
     try {
       const response = await axios.post(
-        'http://ggustac-002-site1.htempurl.com/api/Seguranca/Login',
+        'https://ggustac-002-site1.htempurl.com/api/Seguranca/Login',
         { email, senha },
         { headers: { 'Content-Type': 'application/json' } }
       );

@@ -31,7 +31,7 @@ export default function CandidatoListScreen() {
   useEffect(() => {
     const fetchCandidatos = async () => {
       try {
-        const response = await axios.get('http://ggustac-002-site1.htempurl.com/api/Candidato/dadosBasicos', {
+        const response = await axios.get('https://ggustac-002-site1.htempurl.com/api/Candidato/dadosBasicos', {
           headers: { 'Accept': 'text/plain' },
         });
         setCandidatos(response.data);
@@ -45,7 +45,7 @@ export default function CandidatoListScreen() {
 
     const fetchStatusOptions = async () => {
       try {
-        const response = await axios.get('http://ggustac-002-site1.htempurl.com/api/Candidato/tipoStatus', {
+        const response = await axios.get('https://ggustac-002-site1.htempurl.com/api/Candidato/tipoStatus', {
           headers: { 'Accept': '*/*' },
         });
         setStatusOptions(response.data);
@@ -68,7 +68,7 @@ export default function CandidatoListScreen() {
       }
 
       await axios.patch(
-        `http://ggustac-002-site1.htempurl.com/api/Candidato/${id}/mudarStatus`,
+        `https://ggustac-002-site1.htempurl.com/api/Candidato/${id}/mudarStatus`,
         JSON.stringify(novoStatus),
         {
           headers: {

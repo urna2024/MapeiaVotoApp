@@ -22,7 +22,7 @@ export default function PesquisaEleitoralListScreen() {
   useEffect(() => {
     const fetchPesquisas = async () => {
       try {
-        const response = await axios.get('http://ggustac-002-site1.htempurl.com/api/PesquisaEleitoral/dadosBasicos', {
+        const response = await axios.get('https://ggustac-002-site1.htempurl.com/api/PesquisaEleitoral/dadosBasicos', {
           headers: {
             'Accept': 'text/plain',
           },

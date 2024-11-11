@@ -29,7 +29,7 @@ export default function UsuarioListScreen() {
   useEffect(() => {
     const fetchUsuarios = async () => {
       try {
-        const response = await axios.get('http://ggustac-002-site1.htempurl.com/api/Usuario/dadosBasicos', {
+        const response = await axios.get('https://ggustac-002-site1.htempurl.com/api/Usuario/dadosBasicos', {
           headers: {
             'Accept': 'text/plain',
           },
@@ -45,7 +45,7 @@ export default function UsuarioListScreen() {
 
     const fetchStatusOptions = async () => {
       try {
-        const response = await axios.get('http://ggustac-002-site1.htempurl.com/api/Usuario/tipoStatus', {
+        const response = await axios.get('https://ggustac-002-site1.htempurl.com/api/Usuario/tipoStatus', {
           headers: {
             'Accept': '*/*',
           },
@@ -72,7 +72,7 @@ export default function UsuarioListScreen() {
       console.log("Token do usuário logado:", token);
 
       await axios.patch(
-        `http://ggustac-002-site1.htempurl.com/api/Usuario/${id}/mudarStatus`,
+        `https://ggustac-002-site1.htempurl.com/api/Usuario/${id}/mudarStatus`,
         JSON.stringify(novoStatus),
         {
           headers: {
