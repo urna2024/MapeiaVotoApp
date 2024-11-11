@@ -7,49 +7,49 @@ export default function LayoutTab() {
         <Tabs
             screenOptions={{
                 headerShown: false,
-                tabBarActiveTintColor: '#FFFFFF', 
-                tabBarInactiveTintColor: '#FFFFFF', 
-                tabBarStyle: { backgroundColor: '#1a2b52' }, 
+                tabBarActiveTintColor: '#FFFFFF',
+                tabBarInactiveTintColor: '#FFFFFF',
+                tabBarStyle: { backgroundColor: '#1a2b52' },
                 headerStyle: { backgroundColor: '#0000FF' },
                 headerTitleStyle: { color: '#FFFFFF' },
                 headerTitleAlign: 'center',
                 headerTitle: () => <Text style={{ fontSize: 20, color: '#FFFFFF' }}>Mapeia Voto</Text>,
             }}
         >
-            <Tabs.Screen 
-                name="principal" 
+            <Tabs.Screen
+                name="principal"
                 options={{
                     title: "Principal",
                     tabBarIcon: ({ color }) => <Ionicons name="home" size={25} color={color} />,
-                }} 
+                }}
             />
-            <Tabs.Screen 
-                name="usuarioList" 
+            <Tabs.Screen
+                name="usuarioList"
                 options={{
                     title: "Usuários",
                     tabBarIcon: ({ color }) => <Ionicons name="people" size={25} color={color} />,
-                }} 
+                }}
             />
-            <Tabs.Screen 
-                name="candidatoList" 
+            <Tabs.Screen
+                name="candidatoList"
                 options={{
                     title: "Candidatos",
                     tabBarIcon: ({ color }) => <Ionicons name="people" size={25} color={color} />,
-                }} 
+                }}
             />
-            <Tabs.Screen 
-                name="pesquisaEleitoralMunicipalList" 
+            <Tabs.Screen
+                name="pesquisaEleitoralMunicipalList"
                 options={{
                     title: "Pesquisa",
                     tabBarIcon: ({ color }) => <Ionicons name="document-text" size={25} color={color} />,
                 }}
             />
-            <Tabs.Screen 
-                name="dashboard" 
+            <Tabs.Screen
+                name="dashboard"
                 options={{
                     title: "Estatisticas",
                     tabBarIcon: ({ color }) => <Ionicons name="stats-chart" size={25} color={color} />,
-                }} 
+                }}
             />
         </Tabs>
     );

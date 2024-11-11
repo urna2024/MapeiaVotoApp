@@ -157,6 +157,8 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 10,
+    textAlign: 'center',
+    marginTop: 22,
   },
   list: {
     paddingBottom: 20,
@@ -207,7 +209,7 @@ const styles = StyleSheet.create({
   },
 
   registerButton: {
-    backgroundColor: '#1a2b52', 
+    backgroundColor: '#1a2b52',
     padding: 15,
     borderRadius: 8,
     alignItems: 'center',

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, ActivityIndicator, Alert, ScrollView, Switch } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, ActivityIndicator, Alert, ScrollView, Switch, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -49,7 +49,7 @@ export default function PesquisaEleitoralCadScreen() {
 
   const formatDateForApi = (date: string) => {
     const [day, month, year] = date.split('/');
-    return `${year}-${month}-${day}`; 
+    return `${year}-${month}-${day}`;
   };
 
   const handleDataEntrevistaChange = (text: string) => {
@@ -95,36 +95,43 @@ export default function PesquisaEleitoralCadScreen() {
     }
   };
 
+  // useEffect(() => {
+  //   if (municipiosEntrevistado.length > 0 && entrevistadoMunicipio) {
+  //     setEntrevistadoMunicipio(entrevistadoMunicipio);
+  //   }
+  // }, [municipiosEntrevistado, entrevistadoMunicipio]);
+
   useEffect(() => {
-    if (municipiosEntrevistado.length > 0 && entrevistadoMunicipio) {
-      setEntrevistadoMunicipio(entrevistadoMunicipio);
+    if (entrevistadoUf) {
+      fetchMunicipiosEntrevistado();
     }
-  }, [municipiosEntrevistado, entrevistadoMunicipio]);
-  
+  }, [entrevistadoUf]);
+
+
   const fetchPesquisaData = async () => {
     try {
       setLoading(true);
       const response = await axios.get(`http://ggustac-002-site1.htempurl.com/api/PesquisaEleitoral/${id}`);
       const pesquisa = response.data;
-  
+
       console.log("Dados da pesquisa:", pesquisa);
-  
+
       setDataEntrevista(new Date(pesquisa.dataEntrevista).toLocaleDateString());
       setUf(pesquisa.uf);
-      setMunicipio(pesquisa.municipio); // município da pesquisa
+      setMunicipio(pesquisa.municipio);
       setVotoIndeciso(pesquisa.votoIndeciso);
       setVotoBrancoNulo(pesquisa.votoBrancoNulo);
       setSugestaoMelhoria(pesquisa.sugestaoMelhoria);
       setIdCandidatoPrefeito(pesquisa.idCandidatoPrefeito);
       setIdCandidatoVereador(pesquisa.idCandidatoVereador);
       setIdStatus(pesquisa.idStatus);
-  
+
       const entrevistado = pesquisa.entrevistado[0];
       if (entrevistado) {
         setEntrevistadoNomeCompleto(entrevistado.nomeCompleto);
         setEntrevistadoDataNascimento(new Date(entrevistado.dataNascimento).toLocaleDateString());
         setEntrevistadoUf(entrevistado.uf);
-        setEntrevistadoMunicipio(entrevistado.municipio); // município do entrevistado
+        setEntrevistadoMunicipio(entrevistado.municipio);
         setEntrevistadoCelular(entrevistado.celular);
         setEntrevistadoIdGenero(entrevistado.idGenero);
         setEntrevistadoIdNivelEscolaridade(entrevistado.idNivelEscolaridade);
@@ -139,15 +146,15 @@ export default function PesquisaEleitoralCadScreen() {
       setLoading(false);
     }
   };
-  
-  
+
+
   useEffect(() => {
     if (municipiosEntrevistado.length > 0 && entrevistadoMunicipio) {
       setEntrevistadoMunicipio(entrevistadoMunicipio);
     }
   }, [municipiosEntrevistado, entrevistadoMunicipio]);
-  
-  
+
+
   const fetchUfs = async () => {
     try {
       const response = await axios.get('https://servicodados.ibge.gov.br/api/v1/localidades/estados');
@@ -310,8 +317,6 @@ export default function PesquisaEleitoralCadScreen() {
         <ActivityIndicator size="large" color="#007bff" />
       ) : (
         <>
-          <Text>ID do Usuário: {userId}</Text>
-          <Text>Nome do Usuário: {userName}</Text>
 
           <TextInput
             style={styles.input}
@@ -428,20 +433,20 @@ export default function PesquisaEleitoralCadScreen() {
           </Picker>
 
           <Text>Município do Entrevistado:</Text>
-<Picker
-  selectedValue={entrevistadoMunicipio}
-  style={styles.picker}
-  onValueChange={(itemValue: string) => {
-    setEntrevistadoMunicipio(itemValue);
-    console.log("Município selecionado:", itemValue);
-  }}
-  enabled={!isEditing}
->
-  <Picker.Item label="Selecione o Município" value="" />
-  {municipiosEntrevistado.map((cidade) => (
-    <Picker.Item key={cidade} label={cidade} value={cidade} />
-  ))}
-</Picker>
+          <Picker
+            selectedValue={entrevistadoMunicipio}
+            style={styles.picker}
+            onValueChange={(itemValue: string) => {
+              setEntrevistadoMunicipio(itemValue);
+              console.log("Município selecionado:", itemValue);
+            }}
+            enabled={!isEditing}
+          >
+            <Picker.Item label="Selecione o Município" value="" />
+            {municipiosEntrevistado.map((cidade) => (
+              <Picker.Item key={cidade} label={cidade} value={cidade} />
+            ))}
+          </Picker>
 
 
 
@@ -511,10 +516,15 @@ export default function PesquisaEleitoralCadScreen() {
           </View>
 
           {isEditing ? (
-            <Button title="Voltar" onPress={handleVoltar} />
+            <TouchableOpacity style={styles.backButton} onPress={handleVoltar}>
+              <Text style={styles.backButtonText}>Voltar</Text>
+            </TouchableOpacity>
           ) : (
-            <Button title="Cadastrar Pesquisa" onPress={handleCadastro} />
+            <TouchableOpacity style={styles.registerButton} onPress={handleCadastro}>
+              <Text style={styles.registerButtonText}>Cadastrar Pesquisa</Text>
+            </TouchableOpacity>
           )}
+
           <View style={{ paddingBottom: 120 }} />
         </>
       )}
@@ -532,6 +542,8 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 10,
+    textAlign: 'center',
+    marginTop: 22,
   },
   input: {
     borderColor: '#CCC',
@@ -550,5 +562,28 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 10,
+  },
+  registerButton: {
+    backgroundColor: '#1a2b52',
+    padding: 15,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  registerButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  backButton: {
+    padding: 10,
+    backgroundColor: '#1a2b52',
+    borderRadius: 5,
+    margin: 20,
+  },
+  backButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    textAlign: 'center',
   },
 });

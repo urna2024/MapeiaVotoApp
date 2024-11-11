@@ -77,15 +77,15 @@ export default function UsuarioListScreen() {
         {
           headers: {
             'Content-Type': 'application/json-patch+json',
-            'Authorization': `Bearer ${token}`, 
+            'Authorization': `Bearer ${token}`,
           },
         }
       );
 
       setUsuarios((prevUsuarios) =>
         prevUsuarios.map((usuario) =>
-          usuario.id === id 
-            ? { ...usuario, idStatus: novoStatus, statusNome: statusOptions.find(status => status.id === novoStatus)?.nome || usuario.statusNome } 
+          usuario.id === id
+            ? { ...usuario, idStatus: novoStatus, statusNome: statusOptions.find(status => status.id === novoStatus)?.nome || usuario.statusNome }
             : usuario
         )
       );
@@ -136,7 +136,7 @@ export default function UsuarioListScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Lista de Usuários</Text>
-      
+
       <TouchableOpacity style={styles.registerButton} onPress={() => router.push('/cadastros/usuarioCad' as never)}>
         <Text style={styles.registerButtonText}>Cadastrar Novo Usuário</Text>
       </TouchableOpacity>
@@ -161,7 +161,9 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 10,
-    alignItems: 'center' 
+    alignItems: 'center',
+    textAlign: 'center',
+    marginTop: 22,
   },
   list: {
     paddingBottom: 20,
@@ -211,14 +213,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   registerButton: {
-    backgroundColor: '#1a2b52', 
+    backgroundColor: '#1a2b52',
     padding: 15,
     borderRadius: 8,
     alignItems: 'center',
     marginBottom: 20,
   },
   registerButtonText: {
-    color: '#fff', 
+    color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
   },

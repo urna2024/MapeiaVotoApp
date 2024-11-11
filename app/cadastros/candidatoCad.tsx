@@ -75,7 +75,7 @@ export default function CandidatoCadScreen() {
           });
           const candidatoData = response.data;
 
-          
+
           const [year, month, day] = candidatoData.dataNascimento.split('T')[0].split('-');
           const formattedDate = `${day}/${month}/${year}`;
 
@@ -117,11 +117,11 @@ export default function CandidatoCadScreen() {
     fetchMunicipios();
   }, [uf]);
 
- 
-  const handleDateChange = (text: string) => {
-    let formattedText = text.replace(/\D/g, ''); 
 
- 
+  const handleDateChange = (text: string) => {
+    let formattedText = text.replace(/\D/g, '');
+
+
     if (formattedText.length >= 3) {
       formattedText = formattedText.slice(0, 2) + '/' + formattedText.slice(2);
     }
@@ -163,7 +163,7 @@ export default function CandidatoCadScreen() {
       const payload = {
         nomeCompleto,
         nomeUrna,
-        dataNascimento: formattedDataNascimento,  
+        dataNascimento: formattedDataNascimento,
         uf,
         municipio,
         foto,
@@ -216,7 +216,7 @@ export default function CandidatoCadScreen() {
             placeholder="Data de Nascimento (DD/MM/YYYY)"
             value={dataNascimento}
             onChangeText={handleDateChange}
-            maxLength={10} 
+            maxLength={10}
           />
           <TextInput
             style={styles.input}
@@ -284,7 +284,7 @@ export default function CandidatoCadScreen() {
               <Picker.Item key={cargo.id} label={cargo.nome} value={cargo.id} />
             ))}
           </Picker>
-          
+
           <TouchableOpacity style={styles.registerButton} onPress={handleCadastro}>
             <Text style={styles.registerButtonText}>{id ? "Salvar Alterações" : "Cadastrar Candidato"}</Text>
           </TouchableOpacity>
@@ -309,7 +309,9 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 10,
+    marginBottom: 5,
+    textAlign: 'center',
+    marginTop: 22,
   },
   input: {
     width: '100%',
@@ -317,7 +319,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 6,
     padding: 10,
-    marginBottom: 15,
+    marginBottom: 10,
     fontSize: 16,
     backgroundColor: '#f5f5f5',
   },
@@ -333,14 +335,14 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   registerButton: {
-    backgroundColor: '#1a2b52', 
+    backgroundColor: '#1a2b52',
     padding: 15,
     borderRadius: 8,
     alignItems: 'center',
     marginBottom: 20,
   },
   registerButtonText: {
-    color: '#fff', 
+    color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
   },

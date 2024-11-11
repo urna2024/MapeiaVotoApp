@@ -10,15 +10,15 @@ export default function TrocarSenhaScreen() {
   const [senha, setSenha] = useState('');
   const [novaSenha, setNovaSenha] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false); 
-  const [showNewPassword, setShowNewPassword] = useState(false); 
+  const [showPassword, setShowPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
 
   const handleTrocarSenha = async () => {
     setLoading(true);
 
     try {
-      const userId = await AsyncStorage.getItem('userId'); 
-      const token = await AsyncStorage.getItem('token'); 
+      const userId = await AsyncStorage.getItem('userId');
+      const token = await AsyncStorage.getItem('token');
 
       if (!userId) {
         Alert.alert('Erro', 'ID do usuário não encontrado.');
@@ -46,7 +46,7 @@ export default function TrocarSenhaScreen() {
       await AsyncStorage.removeItem('token');
       await AsyncStorage.removeItem('userId');
 
-      router.replace({ pathname: '/' } as never); 
+      router.replace({ pathname: '/' } as never);
     } catch (error) {
       console.error('Erro ao trocar senha:', error);
       Alert.alert('Erro', 'Não foi possível alterar a senha.');
@@ -70,7 +70,7 @@ export default function TrocarSenhaScreen() {
           placeholder="Digite sua senha atual"
           value={senha}
           onChangeText={setSenha}
-          secureTextEntry={!showPassword} 
+          secureTextEntry={!showPassword}
         />
         <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
           <Icon name={showPassword ? 'eye-slash' : 'eye'} size={20} color="#1a2b52" style={styles.eyeIcon} />
@@ -83,7 +83,7 @@ export default function TrocarSenhaScreen() {
           placeholder="Digite sua nova senha"
           value={novaSenha}
           onChangeText={setNovaSenha}
-          secureTextEntry={!showNewPassword} 
+          secureTextEntry={!showNewPassword}
         />
         <TouchableOpacity onPress={() => setShowNewPassword(!showNewPassword)}>
           <Icon name={showNewPassword ? 'eye-slash' : 'eye'} size={20} color="#1a2b52" style={styles.eyeIcon} />

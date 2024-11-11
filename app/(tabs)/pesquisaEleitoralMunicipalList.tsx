@@ -67,7 +67,7 @@ export default function PesquisaEleitoralListScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Lista de Pesquisas Eleitorais</Text>
-      
+
       <TouchableOpacity style={styles.addButton} onPress={() => router.push('/cadastros/pesquisaEleitoralMunicipalCad' as never)}>
         <Text style={styles.addButtonText}>Adicionar Nova Pesquisa</Text>
       </TouchableOpacity>
@@ -93,6 +93,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 10,
     textAlign: 'center',
+    marginTop: 22,
   },
   list: {
     paddingBottom: 20,
@@ -132,14 +133,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   addButton: {
-    backgroundColor: '#1a2b52', 
+    backgroundColor: '#1a2b52',
     padding: 15,
     borderRadius: 8,
     alignItems: 'center',
     marginBottom: 20,
   },
   addButtonText: {
-    color: '#fff', 
+    color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
   },

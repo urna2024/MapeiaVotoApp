@@ -19,8 +19,8 @@ export default function Principal() {
           text: 'Sair',
           style: 'destructive',
           onPress: () => {
-            
-            router.push('/'); 
+
+            router.push('/');
           },
         },
       ],
@@ -37,7 +37,7 @@ export default function Principal() {
       <Text style={styles.title}>Bem-vindo ao MapeiaVoto</Text>
 
       <Image
-        source={require('../../assets/images/urna.png')} 
+        source={require('../../assets/images/urna.png')}
         style={styles.logo}
         resizeMode="contain"
       />

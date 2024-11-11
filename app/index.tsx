@@ -9,7 +9,7 @@ export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false); 
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
   const handleLogin = async () => {
@@ -38,7 +38,7 @@ export default function LoginScreen() {
       }
     } catch (error) {
       Alert.alert('Erro de login', 'Não foi possível realizar o login. Verifique as credenciais e tente novamente.');
-      console.error('Erro ao fazer login:', error);
+
     } finally {
       setLoading(false);
     }
@@ -63,9 +63,9 @@ export default function LoginScreen() {
       <Text style={styles.label}>Senha</Text>
       <View style={styles.passwordContainer}>
         <TextInput
-          style={styles.passwordInput} 
+          style={styles.passwordInput}
           placeholder="Digite a senha..."
-          secureTextEntry={!showPassword} 
+          secureTextEntry={!showPassword}
           value={senha}
           onChangeText={setSenha}
           autoCapitalize="none"

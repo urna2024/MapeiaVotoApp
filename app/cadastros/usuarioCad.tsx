@@ -28,7 +28,7 @@ export default function UsuarioCadScreen() {
   const [statusOptions, setStatusOptions] = useState<Status[]>([]);
   const [perfilOptions, setPerfilOptions] = useState<Perfil[]>([]);
   const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false); 
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     const fetchStatusOptions = async () => {
@@ -120,7 +120,7 @@ export default function UsuarioCadScreen() {
       const response = await axios[method](endpoint, payload, {
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`, 
+          'Authorization': `Bearer ${token}`,
         },
       });
 
@@ -158,7 +158,7 @@ export default function UsuarioCadScreen() {
 
           <View style={styles.passwordContainer}>
             <TextInput
-              style={styles.passwordInput} 
+              style={styles.passwordInput}
               placeholder="Senha"
               value={senha}
               onChangeText={setSenha}
@@ -196,6 +196,9 @@ export default function UsuarioCadScreen() {
           <TouchableOpacity style={styles.registerButton} onPress={handleCadastro}>
             <Text style={styles.registerButtonText}>{id ? "Salvar Alterações" : "Cadastrar Usuário"}</Text>
           </TouchableOpacity>
+          <TouchableOpacity style={styles.backButton} onPress={() => router.push('/(tabs)/usuarioList' as never)}>
+            <Text style={styles.backButtonText}>Voltar</Text>
+          </TouchableOpacity>
         </>
       )}
     </View>
@@ -212,6 +215,8 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 10,
+    textAlign: 'center',
+    marginTop: 22,
   },
   input: {
     width: '100%',
@@ -248,15 +253,26 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   registerButton: {
-    backgroundColor: '#1a2b52', 
+    backgroundColor: '#1a2b52',
     padding: 15,
     borderRadius: 8,
     alignItems: 'center',
     marginTop: 20,
   },
   registerButtonText: {
-    color: '#fff', 
+    color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  backButton: {
+    padding: 10,
+    backgroundColor: '#1a2b52',
+    borderRadius: 5,
+    margin: 20,
+  },
+  backButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    textAlign: 'center',
   },
 });
