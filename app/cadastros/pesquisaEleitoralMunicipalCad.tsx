@@ -35,6 +35,9 @@ export default function PesquisaEleitoralCadScreen() {
   const [ufs, setUfs] = useState<string[]>([]);
   const [municipiosEntrevista, setMunicipiosEntrevista] = useState<string[]>([]);
   const [municipiosEntrevistado, setMunicipiosEntrevistado] = useState<string[]>([]);
+  const [generos, setGeneros] = useState([]);
+  const [nivelEscolaridadeOptions, setNivelEscolaridadeOptions] = useState([]);
+  const [rendaFamiliarOptions, setRendaFamiliarOptions] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const formatDate = (date: string) => {
@@ -49,27 +52,102 @@ export default function PesquisaEleitoralCadScreen() {
     return `${year}-${month}-${day}`; 
   };
 
+  const handleDataEntrevistaChange = (text: string) => {
+    setDataEntrevista(formatDate(text));
+  };
+
+  const handleEntrevistadoDataNascimentoChange = (text: string) => {
+    setEntrevistadoDataNascimento(formatDate(text));
+  };
+
+  const isEditing = !!id;
+
   useEffect(() => {
-    fetchUfs();
-    fetchStatusOptions();
-    getUserInfo();
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        await fetchUfs();
+        await fetchStatusOptions();
+        await fetchGeneros();
+        await fetchNiveisEscolaridade();
+        await fetchRendaFamiliar();
+        getUserInfo();
+        if (isEditing) {
+          await fetchPesquisaData();
+        }
+      } catch (error) {
+        console.error("Erro ao buscar dados:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
-  useEffect(() => {
-    if (uf) fetchMunicipiosEntrevista();
-  }, [uf]);
-
-  useEffect(() => {
-    if (entrevistadoUf) fetchMunicipiosEntrevistado();
-  }, [entrevistadoUf]);
-
-  useEffect(() => {
-    if (uf && municipio) {
-      fetchPrefeitos();
-      fetchVereadores();
+  const fetchMunicipiosEntrevistado = async () => {
+    try {
+      const response = await axios.get(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${entrevistadoUf}/municipios`);
+      const nomesMunicipios = response.data.map((municipio: any) => municipio.nome);
+      setMunicipiosEntrevistado(nomesMunicipios);
+    } catch (error) {
+      console.error("Erro ao buscar municípios do entrevistado:", error);
     }
-  }, [uf, municipio]);
+  };
 
+  useEffect(() => {
+    if (municipiosEntrevistado.length > 0 && entrevistadoMunicipio) {
+      setEntrevistadoMunicipio(entrevistadoMunicipio);
+    }
+  }, [municipiosEntrevistado, entrevistadoMunicipio]);
+  
+  const fetchPesquisaData = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`http://ggustac-002-site1.htempurl.com/api/PesquisaEleitoral/${id}`);
+      const pesquisa = response.data;
+  
+      console.log("Dados da pesquisa:", pesquisa);
+  
+      setDataEntrevista(new Date(pesquisa.dataEntrevista).toLocaleDateString());
+      setUf(pesquisa.uf);
+      setMunicipio(pesquisa.municipio); // município da pesquisa
+      setVotoIndeciso(pesquisa.votoIndeciso);
+      setVotoBrancoNulo(pesquisa.votoBrancoNulo);
+      setSugestaoMelhoria(pesquisa.sugestaoMelhoria);
+      setIdCandidatoPrefeito(pesquisa.idCandidatoPrefeito);
+      setIdCandidatoVereador(pesquisa.idCandidatoVereador);
+      setIdStatus(pesquisa.idStatus);
+  
+      const entrevistado = pesquisa.entrevistado[0];
+      if (entrevistado) {
+        setEntrevistadoNomeCompleto(entrevistado.nomeCompleto);
+        setEntrevistadoDataNascimento(new Date(entrevistado.dataNascimento).toLocaleDateString());
+        setEntrevistadoUf(entrevistado.uf);
+        setEntrevistadoMunicipio(entrevistado.municipio); // município do entrevistado
+        setEntrevistadoCelular(entrevistado.celular);
+        setEntrevistadoIdGenero(entrevistado.idGenero);
+        setEntrevistadoIdNivelEscolaridade(entrevistado.idNivelEscolaridade);
+        setEntrevistadoIdRendaFamiliar(entrevistado.idRendaFamiliar);
+      } else {
+        console.warn("Dados do entrevistado estão vazios.");
+      }
+    } catch (error) {
+      console.error("Erro ao buscar dados da pesquisa:", error);
+      Alert.alert("Erro", "Não foi possível carregar os dados da pesquisa.");
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  
+  useEffect(() => {
+    if (municipiosEntrevistado.length > 0 && entrevistadoMunicipio) {
+      setEntrevistadoMunicipio(entrevistadoMunicipio);
+    }
+  }, [municipiosEntrevistado, entrevistadoMunicipio]);
+  
+  
   const fetchUfs = async () => {
     try {
       const response = await axios.get('https://servicodados.ibge.gov.br/api/v1/localidades/estados');
@@ -89,23 +167,30 @@ export default function PesquisaEleitoralCadScreen() {
     }
   };
 
-  const fetchMunicipiosEntrevista = async () => {
+  const fetchGeneros = async () => {
     try {
-      const response = await axios.get(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios`);
-      const nomesMunicipios = response.data.map((municipio: any) => municipio.nome);
-      setMunicipiosEntrevista(nomesMunicipios);
+      const response = await axios.get('http://ggustac-002-site1.htempurl.com/api/PesquisaEleitoral/generos');
+      setGeneros(response.data);
     } catch (error) {
-      console.error("Erro ao buscar municípios da entrevista:", error);
+      console.error("Erro ao buscar gêneros:", error);
     }
   };
 
-  const fetchMunicipiosEntrevistado = async () => {
+  const fetchNiveisEscolaridade = async () => {
     try {
-      const response = await axios.get(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${entrevistadoUf}/municipios`);
-      const nomesMunicipios = response.data.map((municipio: any) => municipio.nome);
-      setMunicipiosEntrevistado(nomesMunicipios);
+      const response = await axios.get('http://ggustac-002-site1.htempurl.com/api/PesquisaEleitoral/nivelEscolaridade');
+      setNivelEscolaridadeOptions(response.data);
     } catch (error) {
-      console.error("Erro ao buscar municípios do entrevistado:", error);
+      console.error("Erro ao buscar níveis de escolaridade:", error);
+    }
+  };
+
+  const fetchRendaFamiliar = async () => {
+    try {
+      const response = await axios.get('http://ggustac-002-site1.htempurl.com/api/PesquisaEleitoral/rendaFamiliar');
+      setRendaFamiliarOptions(response.data);
+    } catch (error) {
+      console.error("Erro ao buscar renda familiar:", error);
     }
   };
 
@@ -124,6 +209,29 @@ export default function PesquisaEleitoralCadScreen() {
       setVereadores(response.data);
     } catch (error) {
       console.error("Erro ao buscar vereadores:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (uf) {
+      fetchMunicipiosEntrevista();
+    }
+  }, [uf]);
+
+  useEffect(() => {
+    if (uf && municipio) {
+      fetchPrefeitos();
+      fetchVereadores();
+    }
+  }, [uf, municipio]);
+
+  const fetchMunicipiosEntrevista = async () => {
+    try {
+      const response = await axios.get(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios`);
+      const nomesMunicipios = response.data.map((municipio: any) => municipio.nome);
+      setMunicipiosEntrevista(nomesMunicipios);
+    } catch (error) {
+      console.error("Erro ao buscar municípios da entrevista:", error);
     }
   };
 
@@ -170,9 +278,9 @@ export default function PesquisaEleitoralCadScreen() {
             celular: entrevistadoCelular,
             idGenero: entrevistadoIdGenero,
             idNivelEscolaridade: entrevistadoIdNivelEscolaridade,
-            idRendaFamiliar: entrevistadoIdRendaFamiliar
-          }
-        ]
+            idRendaFamiliar: entrevistadoIdRendaFamiliar,
+          },
+        ],
       };
 
       await axios.post('http://ggustac-002-site1.htempurl.com/api/PesquisaEleitoral', payload, {
@@ -191,16 +299,11 @@ export default function PesquisaEleitoralCadScreen() {
     }
   };
 
-  const handleDataEntrevistaChange = (text: string) => {
-    setDataEntrevista(formatDate(text));
-  };
-
-  const handleEntrevistadoDataNascimentoChange = (text: string) => {
-    setEntrevistadoDataNascimento(formatDate(text));
+  const handleVoltar = () => {
+    router.back();
   };
 
   return (
-  
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Cadastro de Pesquisa Eleitoral Municipal</Text>
       {loading ? (
@@ -217,13 +320,15 @@ export default function PesquisaEleitoralCadScreen() {
             onChangeText={handleDataEntrevistaChange}
             maxLength={10}
             keyboardType="numeric"
+            editable={!isEditing}
           />
 
-<Text>Estado (UF):</Text>
+          <Text>Estado (UF):</Text>
           <Picker
             selectedValue={uf}
             style={styles.picker}
             onValueChange={(itemValue: string) => setUf(itemValue)}
+            enabled={!isEditing}
           >
             <Picker.Item label="Selecione o Estado" value="" />
             {ufs.map((estado) => (
@@ -236,6 +341,7 @@ export default function PesquisaEleitoralCadScreen() {
             selectedValue={municipio}
             style={styles.picker}
             onValueChange={(itemValue: string) => setMunicipio(itemValue)}
+            enabled={!isEditing}
           >
             <Picker.Item label="Selecione o Município" value="" />
             {municipiosEntrevista.map((cidade) => (
@@ -248,6 +354,7 @@ export default function PesquisaEleitoralCadScreen() {
             selectedValue={idStatus}
             style={styles.picker}
             onValueChange={(itemValue: number) => setIdStatus(itemValue)}
+            enabled={!isEditing}
           >
             <Picker.Item label="Selecione o Status" value={undefined} />
             {statusOptions.map((status: any) => (
@@ -260,6 +367,7 @@ export default function PesquisaEleitoralCadScreen() {
             selectedValue={idCandidatoPrefeito}
             style={styles.picker}
             onValueChange={(itemValue: number) => setIdCandidatoPrefeito(itemValue)}
+            enabled={!isEditing}
           >
             <Picker.Item label="Selecione o Prefeito" value={undefined} />
             {prefeitos.map((prefeito: any) => (
@@ -272,6 +380,7 @@ export default function PesquisaEleitoralCadScreen() {
             selectedValue={idCandidatoVereador}
             style={styles.picker}
             onValueChange={(itemValue: number) => setIdCandidatoVereador(itemValue)}
+            enabled={!isEditing}
           >
             <Picker.Item label="Selecione o Vereador" value={undefined} />
             {vereadores.map((vereador: any) => (
@@ -284,7 +393,9 @@ export default function PesquisaEleitoralCadScreen() {
             placeholder="Nome Completo do Entrevistado"
             value={entrevistadoNomeCompleto}
             onChangeText={setEntrevistadoNomeCompleto}
+            editable={!isEditing}
           />
+
           <TextInput
             style={styles.input}
             placeholder="Data de Nascimento do Entrevistado (dd/mm/aaaa)"
@@ -292,46 +403,59 @@ export default function PesquisaEleitoralCadScreen() {
             onChangeText={handleEntrevistadoDataNascimentoChange}
             maxLength={10}
             keyboardType="numeric"
+            editable={!isEditing}
           />
+
           <TextInput
             style={styles.input}
             placeholder="Celular do Entrevistado"
             value={entrevistadoCelular}
             onChangeText={setEntrevistadoCelular}
+            editable={!isEditing}
           />
+
           <Text>UF do Entrevistado:</Text>
           <Picker
             selectedValue={entrevistadoUf}
             style={styles.picker}
             onValueChange={(itemValue: string) => setEntrevistadoUf(itemValue)}
+            enabled={!isEditing}
           >
             <Picker.Item label="Selecione o Estado" value="" />
             {ufs.map((estado) => (
               <Picker.Item key={estado} label={estado} value={estado} />
             ))}
           </Picker>
+
           <Text>Município do Entrevistado:</Text>
-          <Picker
-            selectedValue={entrevistadoMunicipio}
-            style={styles.picker}
-            onValueChange={(itemValue: string) => setEntrevistadoMunicipio(itemValue)}
-          >
-            <Picker.Item label="Selecione o Município" value="" />
-            {municipiosEntrevistado.map((cidade) => (
-              <Picker.Item key={cidade} label={cidade} value={cidade} />
-            ))}
-          </Picker>
+<Picker
+  selectedValue={entrevistadoMunicipio}
+  style={styles.picker}
+  onValueChange={(itemValue: string) => {
+    setEntrevistadoMunicipio(itemValue);
+    console.log("Município selecionado:", itemValue);
+  }}
+  enabled={!isEditing}
+>
+  <Picker.Item label="Selecione o Município" value="" />
+  {municipiosEntrevistado.map((cidade) => (
+    <Picker.Item key={cidade} label={cidade} value={cidade} />
+  ))}
+</Picker>
+
+
 
           <Text>Gênero do Entrevistado:</Text>
           <Picker
             selectedValue={entrevistadoIdGenero}
             style={styles.picker}
             onValueChange={(itemValue: number) => setEntrevistadoIdGenero(itemValue)}
+            enabled={!isEditing}
           >
             <Picker.Item label="Selecione o Gênero" value={undefined} />
-            
-            <Picker.Item label="Masculino" value={1} />
-            <Picker.Item label="Feminino" value={2} />
+            {generos.map((genero: any) => (
+              <Picker.Item key={genero.id} label={genero.nome} value={genero.id} />
+            ))}
           </Picker>
 
           <Text>Nível de Escolaridade do Entrevistado:</Text>
@@ -339,19 +463,12 @@ export default function PesquisaEleitoralCadScreen() {
             selectedValue={entrevistadoIdNivelEscolaridade}
             style={styles.picker}
             onValueChange={(itemValue: number) => setEntrevistadoIdNivelEscolaridade(itemValue)}
+            enabled={!isEditing}
           >
             <Picker.Item label="Selecione o Nível de Escolaridade" value={undefined} />
-            
-            <Picker.Item label="Prefiro não informar" value={1} />
-            <Picker.Item label="Ensino Fundamental Incompleto" value={2} />
-            <Picker.Item label="Ensino Fundamental Completo" value={3} />
-            <Picker.Item label="Ensino Médio Incompleto" value={4} />
-            <Picker.Item label="Ensino Médio Completo" value={5} />
-            <Picker.Item label="Ensino Superior Incompleto" value={6} />
-            <Picker.Item label="Ensino Superior Completo" value={7} />
-            <Picker.Item label="Pós-graduação" value={8} />
-            <Picker.Item label="Mestrado" value={9} />
-            <Picker.Item label="Doutorado" value={10} />
+            {nivelEscolaridadeOptions.map((nivel: any) => (
+              <Picker.Item key={nivel.id} label={nivel.nome} value={nivel.id} />
+            ))}
           </Picker>
 
           <Text>Renda Familiar do Entrevistado:</Text>
@@ -359,21 +476,28 @@ export default function PesquisaEleitoralCadScreen() {
             selectedValue={entrevistadoIdRendaFamiliar}
             style={styles.picker}
             onValueChange={(itemValue: number) => setEntrevistadoIdRendaFamiliar(itemValue)}
+            enabled={!isEditing}
           >
             <Picker.Item label="Selecione a Renda Familiar" value={undefined} />
-            <Picker.Item label="Prefiro não informar" value={2} />
-            <Picker.Item label="Até 1 salário mínimo" value={2} />
-            <Picker.Item label="De 1 a 2 salários mínimos" value={3} />
-            <Picker.Item label="De 2 a 3 salários mínimos" value={4} />
-            <Picker.Item label="De 3 a 4 salários mínimos" value={5} />
-            <Picker.Item label="De 4 a 5 salários mínimos" value={6} />
-            <Picker.Item label="Mais de 5 salários mínimos" value={7} />
+            {rendaFamiliarOptions.map((renda: any) => (
+              <Picker.Item key={renda.id} label={renda.nome} value={renda.id} />
+            ))}
           </Picker>
+
+          <TextInput
+            style={styles.input}
+            placeholder="Sugestão de Melhoria"
+            value={sugestaoMelhoria}
+            onChangeText={setSugestaoMelhoria}
+            editable={!isEditing}
+          />
+
           <View style={styles.switchContainer}>
             <Text>Voto Indeciso</Text>
             <Switch
               value={votoIndeciso}
               onValueChange={(value) => setVotoIndeciso(value)}
+              disabled={isEditing}
             />
           </View>
 
@@ -382,17 +506,15 @@ export default function PesquisaEleitoralCadScreen() {
             <Switch
               value={votoBrancoNulo}
               onValueChange={(value) => setVotoBrancoNulo(value)}
+              disabled={isEditing}
             />
           </View>
 
-          <TextInput
-            style={styles.input}
-            placeholder="Sugestão de Melhoria"
-            value={sugestaoMelhoria}
-            onChangeText={setSugestaoMelhoria}
-          />
-
-          <Button title="Cadastrar Pesquisa" onPress={handleCadastro} />
+          {isEditing ? (
+            <Button title="Voltar" onPress={handleVoltar} />
+          ) : (
+            <Button title="Cadastrar Pesquisa" onPress={handleCadastro} />
+          )}
           <View style={{ paddingBottom: 120 }} />
         </>
       )}
